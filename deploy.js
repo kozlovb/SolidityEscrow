@@ -1,0 +1,11 @@
+Web3 = require('web3')
+web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
+var fs = require('fs');
+var code = fs.readFileSync('Escrow.sol').toString()
+var solc = require('solc')
+var compiledCode = solc.compile(code)
+var abiDefinition = JSON.parse(compiledCode.contracts[':EscrowContract'].interface)
+var EscrowContract = web3.eth.contract(abiDefinition)
+var byteCode = compiledCode.contracts[':EscrowContract'].bytecode
+var deployedContract = EscrowContract.new(1000000000000000000,100000000000000000,web3.eth.accounts[1],web3.eth.accounts[2],{data:byteCode, from: web3.eth.accounts[3], gas: 5000000})
+var contractInstance = EscrowContract.at(deployedContract.address)

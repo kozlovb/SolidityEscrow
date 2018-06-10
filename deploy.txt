@@ -1,0 +1,17 @@
+//run ./node_modules/.bin/ganache-cli -a 21
+
+Web3 = require('web3');
+web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+code = fs.readFileSync('Escrow.sol').toString();
+solc = require('solc');
+compiledCode = solc.compile(code);
+abiDefinition = JSON.parse(compiledCode.contracts[':EscrowContract'].interface);
+EscrowContract = web3.eth.contract(abiDefinition);
+byteCode = compiledCode.contracts[':EscrowContract'].bytecode;
+deployedContract = EscrowContract.new(1000000000000000000,100000000000000000,web3.eth.accounts[1],web3.eth.accounts[2],{data:byteCode, from: web3.eth.accounts[3], gas: 5000000});
+contractInstance = EscrowContract.at(deployedContract.address);
+
+
+
+
+
